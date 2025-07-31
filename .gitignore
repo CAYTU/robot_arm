@@ -1,0 +1,32 @@
+# ROS 2 build and install folders
+build/
+install/
+log/
+test/
+# Colcon metadata
+.colcon/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# VSCode settings
+.vscode/
+
+# MacOS files
+.DS_Store
+
+# ROS 2 launch/test logs
+*.testlog
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Other system files
+*.swp
+*.swo
+*.bak
+*.tmp
