@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <robot name="wx250s">
 
+  <material name="interbotix_black">
+  <color rgba="0.2 0.2 0.2 1.0"/>
+</material>
   <!-- =========================
        Link: wx250s/base_link
        ========================= -->
