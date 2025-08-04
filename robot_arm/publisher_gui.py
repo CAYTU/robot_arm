@@ -25,23 +25,21 @@ class RobotArmGUI(Node):
             "wrist_rotate",
             "gripper",
             "left_finger",
-            "right_finger",
         ]
 
         # Default joint positions
-        self.default_joints = [0.0, -1.16, -0.0, -2.3, -0.0, 1.6, 1.1, 0.0, 0.0]
+        self.default_joints = [0.0, -1.16, -0.0, -2.3, -0.0, 1.6, 1.1, 0.0]
 
         # Joint limits (you can adjust these based on your robot's actual limits)
         self.joint_limits = {
             "waist": (-3.14, 3.14),
-            "shoulder": (-2.0, 0.5),
-            "elbow": (-2.5, 2.5),
+            "shoulder": (-1.88, 1.98),
+            "elbow": (-2.14, 1.60),
             "forearm_roll": (-3.14, 3.14),
-            "wrist_angle": (-1.57, 1.57),
+            "wrist_angle": (-1.745, 2.146),
             "wrist_rotate": (-3.14, 3.14),
             "gripper": (0.0, 2.2),
-            "left_finger": (0.0, 0.04),
-            "right_finger": (0.0, 0.04),
+            "left_finger": (0.015, -0.015),
         }
 
         # Current joint positions
@@ -174,7 +172,7 @@ class RobotArmGUI(Node):
 
     def go_to_home(self):
         """Go to a safe home position"""
-        home_positions = [0.0, -0.5, -1.0, 0.0, -0.5, 0.0, 1.0, 0.0, 0.0]
+        home_positions = [0.0, -0.5, -1.0, 0.0, -0.5, 0.0, 1.0, 0.0]
 
         for i, (joint_name, home_pos) in enumerate(zip(self.joint_names, home_positions)):
             if joint_name in self.sliders and joint_name in self.value_labels:
