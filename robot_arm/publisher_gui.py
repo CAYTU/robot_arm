@@ -29,7 +29,7 @@ class RobotArmGUI(Node):
         ]
 
         # Default joint positions
-        self.default_joints = [0.0, -1.16, -0.0, -2.3, -0.0, 1.6, 1.1, 0.037, -0.037]
+        self.default_joints = [0.0, -1.16, -0.0, -2.3, -0.0, 1.6, 1.1, 0.037, -0.015]
 
         # Joint limits (you can adjust these based on your robot's actual limits)
         self.joint_limits = {
