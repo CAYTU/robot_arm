@@ -33,16 +33,15 @@ class RobotArmGUI(Node):
         # Joint limits (adjust these based on your robot's actual limits)
         # These are typical values for robotic arms - you may need to adjust
         self.joint_limits = {
-            "joint_0": (-3.14, 3.14),      # Base rotation - full rotation
-            "joint_1": (0, 1.57),     # Shoulder - typical range
-            "joint_2": (0, 2.09),     # Elbow - typical range
-            "joint_3": (-1.57, 1.57),     # Wrist roll - full rotation
-            "joint_4": (-1.75, 1.75),     # Wrist pitch - typical range
-            "joint_5": (-3.14, 3.14),     # Wrist yaw - full rotation
-            "left_carriage_joint": (-0.04, 0.04),   # Gripper/carriage - small range
-            "right_carriage_joint": (-0.1, 0.1),  # Gripper/carriage - small range
+            "joint_0": (-3.14, 3.14),
+            "joint_1": (-1.57, 1.57),
+            "joint_2": (-2.09, 2.09),
+            "joint_3": (-3.14, 3.14),
+            "joint_4": (-1.75, 1.75),
+            "joint_5": (-3.14, 3.14),     #
+            "left_carriage_joint": (-0.1, 0.1),
+            "right_carriage_joint": (-0.1, 0.1),
         }
-
         # Display names for joints (more user-friendly)
         self.joint_display_names = {
             "joint_0": "Base (Joint 0)",
@@ -69,8 +68,6 @@ class RobotArmGUI(Node):
         # Timer for publishing joint states
         timer_period = 0.1  # 10 Hz
         self.timer = self.create_timer(timer_period, self.publish_joint_state)
-
-        self.get_logger().info("Robot Arm GUI Controller started")
 
     def setup_gui(self):
         self.root = tk.Tk()
@@ -159,9 +156,7 @@ class RobotArmGUI(Node):
         self.status_label.grid(row=len(self.joint_names) + 3, column=0, columnspan=3,
                               pady=(20, 0))
 
-        self.get_logger().info("GUI setup complete")
-
-    def slider_changed(self, joint_index, value):
+    def cslider_changed(self, joint_index, value):
         """Called when a slider value changes"""
         try:
             float_value = float(value)
@@ -178,136 +173,106 @@ class RobotArmGUI(Node):
                 self.status_label.config(text=f"Status: {display_name} = {float_value:.3f}")
 
         except (ValueError, KeyError) as e:
-            self.get_logger().error(f"Error in slider_changed: {e}")
+            print(f"Error in slider_changed: {e}")
 
     def reset_to_default(self):
         """Reset all joints to default positions"""
-        try:
-            for i, (joint_name, default_pos) in enumerate(zip(self.joint_names, self.default_joints)):
-                if joint_name in self.sliders and joint_name in self.value_labels:
-                    self.sliders[joint_name].set(default_pos)
-                    self.current_positions[i] = default_pos
-                    self.value_labels[joint_name].config(text=f"{default_pos:.3f}")
+        for i, (joint_name, default_pos) in enumerate(zip(self.joint_names, self.default_joints)):
+            if joint_name in self.sliders and joint_name in self.value_labels:
+                self.sliders[joint_name].set(default_pos)
+                self.current_positions[i] = default_pos
+                self.value_labels[joint_name].config(text=f"{default_pos:.3f}")
 
-            if hasattr(self, 'status_label') and self.status_label is not None:
-                self.status_label.config(text="Status: Reset to default positions")
-
-            self.get_logger().info("Reset to default positions")
-        except Exception as e:
-            self.get_logger().error(f"Error in reset_to_default: {e}")
+        if hasattr(self, 'status_label') and self.status_label is not None:
+            self.status_label.config(text="Status: Reset to default positions")
 
     def zero_all_joints(self):
         """Set all joints to zero position"""
-        try:
-            for i, joint_name in enumerate(self.joint_names):
-                if joint_name in self.sliders and joint_name in self.value_labels:
-                    self.sliders[joint_name].set(0.0)
-                    self.current_positions[i] = 0.0
-                    self.value_labels[joint_name].config(text="0.000")
+        for i, joint_name in enumerate(self.joint_names):
+            if joint_name in self.sliders and joint_name in self.value_labels:
+                self.sliders[joint_name].set(0.0)
+                self.current_positions[i] = 0.0
+                self.value_labels[joint_name].config(text="0.000")
 
-            if hasattr(self, 'status_label') and self.status_label is not None:
-                self.status_label.config(text="Status: All joints zeroed")
-
-            self.get_logger().info("All joints zeroed")
-        except Exception as e:
-            self.get_logger().error(f"Error in zero_all_joints: {e}")
+        if hasattr(self, 'status_label') and self.status_label is not None:
+            self.status_label.config(text="Status: All joints zeroed")
 
     def go_to_home(self):
         """Go to a safe home position"""
-        try:
-            # Safe home positions for your robot
-            home_positions = [0.0, -0.5, -1.0, 0.0, -0.5, 0.0, 0.0, 0.0]
+        # Safe home positions for your robot
+        home_positions = [0.0, -0.5, -1.0, 0.0, -0.5, 0.0, 0.0, 0.0]
 
-            for i, (joint_name, home_pos) in enumerate(zip(self.joint_names, home_positions)):
-                if joint_name in self.sliders and joint_name in self.value_labels:
-                    # Check if home position is within limits
-                    min_val, max_val = self.joint_limits[joint_name]
-                    safe_pos = max(min_val, min(max_val, home_pos))
+        for i, (joint_name, home_pos) in enumerate(zip(self.joint_names, home_positions)):
+            if joint_name in self.sliders and joint_name in self.value_labels:
+                # Check if home position is within limits
+                min_val, max_val = self.joint_limits[joint_name]
+                safe_pos = max(min_val, min(max_val, home_pos))
 
-                    self.sliders[joint_name].set(safe_pos)
-                    self.current_positions[i] = safe_pos
-                    self.value_labels[joint_name].config(text=f"{safe_pos:.3f}")
+                self.sliders[joint_name].set(safe_pos)
+                self.current_positions[i] = safe_pos
+                self.value_labels[joint_name].config(text=f"{safe_pos:.3f}")
 
-            if hasattr(self, 'status_label') and self.status_label is not None:
-                self.status_label.config(text="Status: Moved to home position")
-
-            self.get_logger().info("Moved to home position")
-        except Exception as e:
-            self.get_logger().error(f"Error in go_to_home: {e}")
+        if hasattr(self, 'status_label') and self.status_label is not None:
+            self.status_label.config(text="Status: Moved to home position")
 
     def preset_position_1(self):
         """Go to preset position 1 - example reaching position"""
         preset_positions = [0.5, -0.8, 1.2, 0.0, -0.5, 0.0, 0.0, 0.0]
+
         self.set_joint_positions(preset_positions, "Preset Position 1")
 
     def preset_position_2(self):
         """Go to preset position 2 - example inspection position"""
         preset_positions = [-0.5, -1.0, 0.8, 1.57, 0.3, -0.8, 0.0, 0.0]
+
         self.set_joint_positions(preset_positions, "Preset Position 2")
 
     def set_joint_positions(self, positions, status_message):
         """Helper function to set joint positions"""
-        try:
-            for i, (joint_name, pos) in enumerate(zip(self.joint_names, positions)):
-                if joint_name in self.sliders and joint_name in self.value_labels:
-                    # Check if position is within limits
-                    min_val, max_val = self.joint_limits[joint_name]
-                    safe_pos = max(min_val, min(max_val, pos))
+        for i, (joint_name, pos) in enumerate(zip(self.joint_names, positions)):
+            if joint_name in self.sliders and joint_name in self.value_labels:
+                # Check if position is within limits
+                min_val, max_val = self.joint_limits[joint_name]
+                safe_pos = max(min_val, min(max_val, pos))
 
-                    self.sliders[joint_name].set(safe_pos)
-                    self.current_positions[i] = safe_pos
-                    self.value_labels[joint_name].config(text=f"{safe_pos:.3f}")
+                self.sliders[joint_name].set(safe_pos)
+                self.current_positions[i] = safe_pos
+                self.value_labels[joint_name].config(text=f"{safe_pos:.3f}")
 
-            if hasattr(self, 'status_label') and self.status_label is not None:
-                self.status_label.config(text=f"Status: {status_message}")
-
-            self.get_logger().info(f"Set to {status_message}")
-        except Exception as e:
-            self.get_logger().error(f"Error in set_joint_positions: {e}")
+        if hasattr(self, 'status_label') and self.status_label is not None:
+            self.status_label.config(text=f"Status: {status_message}")
 
     def publish_joint_state(self):
         """Publish current joint state"""
-        try:
-            joint_state = JointState()
-            joint_state.header.stamp = self.get_clock().now().to_msg()
-            joint_state.name = self.joint_names
-            joint_state.position = self.current_positions
+        joint_state = JointState()
+        joint_state.header.stamp = self.get_clock().now().to_msg()
+        joint_state.name = self.joint_names
+        joint_state.position = self.current_positions
 
-            self.publisher_.publish(joint_state)
-        except Exception as e:
-            self.get_logger().error(f"Error publishing joint state: {e}")
+        self.publisher_.publish(joint_state)
 
     def run_gui(self):
         """Run the GUI main loop"""
-        try:
-            self.root.mainloop()
-        except Exception as e:
-            self.get_logger().error(f"Error in GUI main loop: {e}")
+        self.root.mainloop()
 
 def main(args=None):
     rclpy.init(args=args)
 
+    # Create the robot arm GUI controller
+    robot_controller = RobotArmGUI()
+
+    # Run ROS2 spinning in a separate thread
+    ros_thread = threading.Thread(target=lambda: rclpy.spin(robot_controller), daemon=True)
+    ros_thread.start()
+
     try:
-        # Create the robot arm GUI controller
-        robot_controller = RobotArmGUI()
-
-        # Run ROS2 spinning in a separate thread
-        ros_thread = threading.Thread(target=lambda: rclpy.spin(robot_controller), daemon=True)
-        ros_thread.start()
-
         # Run the GUI (this will block until the window is closed)
         robot_controller.run_gui()
-
     except KeyboardInterrupt:
-        print("Interrupted by user")
-    except Exception as e:
-        print(f"Error in main: {e}")
+        pass
     finally:
         # Cleanup
-        try:
-            robot_controller.destroy_node()
-        except:
-            pass
+        robot_controller.destroy_node()
         rclpy.shutdown()
 
 if __name__ == "__main__":
