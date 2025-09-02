@@ -31,11 +31,10 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'publisher = robot_arm.publisher:main',
+            'robot_arm_controller = robot_arm.robot_arm_controller:main',
             'publisher_gui = robot_arm.publisher_gui:main',
-            'publisher_trossen = robot_arm.publisher_trossen:main'
-            # 'isaac_frank_arm = robot_arm.isaac_frank_arm:main',
-            # 'gripper = robot_arm.gripper:main',
+            'publisher_trossen = robot_arm.publisher_trossen:main',
+
         ],
     },
 )
